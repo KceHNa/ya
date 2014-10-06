@@ -1,0 +1,27 @@
+<style type="text/css">
+    table {
+        border-collapse: collapse;
+    }
+    td {
+        border: #b7b7b7 1px solid;
+        padding: 5px;
+    }
+</style>
+
+
+<p><h1>Morda</h1></p>
+
+
+<form action="action.php" method="post" enctype="multipart/form-data">
+        Zond_1_src: <input type="text" name="zond1src" />
+        Zond_2_dst: <input type="text" name="zond2dst" /><br />
+        Passwd zd1: <input type="text" name="paszond1" /><br />
+        <p>Time hh: <input type="int" name="time_h" />
+        mm: <input type="int" name="time_m" /><br /></p>
+        Runtime/2: <input type="int" name="runtime" /><br />
+        <p>Traffic type:
+        <input type="radio" name="traffictype" value="t" /> VoIP
+        <input type="radio" name="traffictype" value="v" /> VIDEO
+        <input type="radio" name="traffictype" value="h" /> hz </p>
+        <input type="submit" value="Set" />
+</form>

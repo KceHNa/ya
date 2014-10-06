@@ -1,0 +1,97 @@
+TOS 			ANDmask XORmask Рекомендуемое использование
+Minimum Delay 		0x01 	0x10 	ftp, telnet, ssh
+Maximum Throughput	0x01 	0x08 	ftp-данные, www
+Maximum Reliability 	0x01 	0x04 	snmp, dns
+Minimum Cost 		0x01 	0x02 	nntp, smtp
+
+
+ef   = dscp 46 = 101110 = tos 0xb8 (184) = ip prec 5
+af31 = dscp 26 = 011010 = tos 0x68 (104) = ip prec 3
+af32 = dscp 28 = 011100 = tos 0x70 (112) = ip prec 3
+cs3  = dscp 24 = 011000 = tos 0x60 (96)  = ip prec 3
+
+
+Traffic Type 		Layer 2 CoS 	Layer 3 IP Precedence 	Layer 3 DSCP
+Voice RTP1 		5 		5 			EF
+Voice control 		3 		3 			AF31
+Video conference 	4 		4 			AF41
+Streaming video (IP/TV) 1 		1 			AF13
+Data 			0-2 		0-2 			0-AF23
+  
+1* RTP = Real-Time Transport Protocol
+
+
+ Assured Forwarding (AF) Behavior Group 
+		Class 1 (lowest) 	Class 2 	Class 3 	Class 4 (highest)
+Low Drop 	AF11 (DSCP 10) 		AF21 (DSCP 18) 	AF31 (DSCP 26) 	AF41 (DSCP 34)
+Med Drop 	AF12 (DSCP 12) 		AF22 (DSCP 20) 	AF32 (DSCP 28) 	AF42 (DSCP 36)
+High Drop 	AF13 (DSCP 14) 		AF23 (DSCP 22) 	AF33 (DSCP 30) 	AF43 (DSCP 38)
+
+
+
+Telephony
+(VoIP, Voice Band data,...) 	46 ('101110') 	Expedited Forwarding
+Signaling
+(Peer-to-Peer, signaling for IPTV apps,...) 	40 ('101000') 	Class Selector 5
+Multimedia Conferencing
+(Video conferencing, mission critical apps,...) 	34 ('100010') 	Assured Forwarding 4
+Real-Time Interactive
+(Interactive gaming, IP VPN,...) 	32 ('100000') 	Class Selector 4
+Multimedia Streaming
+(Buffered streaming audio, webcasts,...) 	26 ('011010') 	Assured Forwarding 3
+Broadcast Video
+(Video surveillance, video on demand,...) 	24 ('011000') 	Class Selector 3
+Low-Latency Data
+(Web transactions, financial wire transfers,...) 	18 ('010010') 	Assured Frowarding 2
+High-Throughput Data
+(File transfers, email,...) 	10 ('001010') 	Assured Forwarding 1
+Standard
+(DNS, DHCP,...) 	0 ('000000') 	Default Forwarding
+
+===HPING3
+apt-get install hping3
+http://www.packetlevel.ch/html/hping.html
+
+
+===PATHRATE & PATHLOAD
+=install gcc make
+wget http://www.cc.gatech.edu/fac/constantinos.dovrolis/bw-est/pathload.tar.gz
+tar xvf pathload.tar.gz
+cd pathload_1.3.2/
+./configure
+make
+cp pathload_snd /usr/local/sbin/
+cp pathload_rcv /usr/local/sbin/
+
+wget http://www.cc.gatech.edu/~dovrolis/bw-est/pathrate.tar.gz
+tar xvf pathrate.tar.gz
+cd pathrate_2.4.1/
+./configure 
+make
+cp pathrate_snd /usr/local/sbin/
+cp pathrate_rcv /usr/local/sbin/
+
+
+===Настройка iptables
+
+apt-get install iptables-persistent
+/etc/init.d/iptables-persistent start
+#Очистка таблиц
+iptables -Z
+iptables -A INPUT -i eth0 -j ACCEPT
+iptables -A OUTPUT -o eth0 -j ACCEPT
+save
+iptables -A INPUT -i eth1 -j ACCEPT
+iptables -A OUTPUT -o eth1 -j ACCEPT
+
+====Копирование и бекап
+[root@debian-t ~]# cp /opt/dst_traf.sh /opt/dst_traf.sh.1
+root@wtplug:~# cp /opt/src_traf.sh /opt/src_traf.sh.2
+root@wtplug:~# scp /opt/dst_traf.sh root@192.168.1.181:/opt/
+[root@debian-t ~]# scp /opt/src_traf.sh root@192.168.1.247:/opt/
+====
+
+===Крон
+crontab -e
+58 10 * * * /opt/src_traf.sh -v 192.168.1.247 20
+
